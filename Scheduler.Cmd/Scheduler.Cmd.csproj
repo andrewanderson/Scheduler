@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3BF113CC-5EE2-4C9E-86C4-923CFE0B21E2}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{97471632-0657-4B47-9617-0D914146892C}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Scheduler.Domain</RootNamespace>
-    <AssemblyName>Scheduler.Domain</AssemblyName>
+    <RootNamespace>Scheduler.Cmd</RootNamespace>
+    <AssemblyName>Scheduler.Cmd</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -39,14 +41,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Field.cs" />
-    <Compile Include="GameSlot.cs" />
-    <Compile Include="League.cs" />
-    <Compile Include="Matchup.cs" />
-    <Compile Include="Season.cs" />
-    <Compile Include="Team.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Schedule.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Scheduler.Domain\Scheduler.Domain.csproj">
+      <Project>{3bf113cc-5ee2-4c9e-86c4-923cfe0b21e2}</Project>
+      <Name>Scheduler.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Scheduler.GeneticAlgorithm\Scheduler.GeneticAlgorithm.csproj">
+      <Project>{3060c925-ff35-4dd9-8dbd-5ade6e60a669}</Project>
+      <Name>Scheduler.GeneticAlgorithm</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

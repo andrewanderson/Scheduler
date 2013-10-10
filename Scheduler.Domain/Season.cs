@@ -8,6 +8,11 @@ namespace Scheduler.Domain
 {
     public class Season
     {
-        public List<Schedule> Weeks { get; set; }
+        public Season()
+        {
+            this.Weeks = new List<Schedule>();
+        }
+
+        public List<Schedule> Weeks { get; private set; }
     }
 }

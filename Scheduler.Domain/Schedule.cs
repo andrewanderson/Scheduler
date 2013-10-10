@@ -13,7 +13,6 @@ namespace Scheduler.Domain
             this.Games = new List<Matchup>();
         }
 
-        public DateTime Date { get; set; }
         public List<Matchup> Games { get; private set; }
     }
 }
