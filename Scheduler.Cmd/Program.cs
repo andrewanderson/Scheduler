@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Scheduler.Domain;
 using Scheduler.GeneticAlgorithm;
+using Scheduler.GeneticAlgorithm.Rules;
 
 namespace Scheduler.Cmd
 {
@@ -24,10 +25,10 @@ namespace Scheduler.Cmd
             league.Teams.Add(new Team { Name = "Team 7" });
             league.Teams.Add(new Team { Name = "Team 8" });
 
-            league.GameSlots.Add(new GameSlot { Field = field, StartTime = "6:00" });
-            league.GameSlots.Add(new GameSlot { Field = field, StartTime = "7:15" });
-            league.GameSlots.Add(new GameSlot { Field = field, StartTime = "8:30" });
-            league.GameSlots.Add(new GameSlot { Field = field, StartTime = "9:45" });
+            league.GameSlots.Add(new GameSlot { Id = "6:00", Field = field, StartTime = "6:00" });
+            league.GameSlots.Add(new GameSlot { Id = "7:15", Field = field, StartTime = "7:15" });
+            league.GameSlots.Add(new GameSlot { Id = "8:30", Field = field, StartTime = "8:30" });
+            league.GameSlots.Add(new GameSlot { Id = "9:45", Field = field, StartTime = "9:45" });
 
             var factory = new SeasonFactory(league);
             var season = factory.GenerateRandom();
@@ -42,6 +43,16 @@ namespace Scheduler.Cmd
                 }
                 Console.Out.WriteLine(string.Empty);
             }
+
+            var rules = new List<IRule> {
+                new ValidScheduleRule() ,
+                new GameslotAllocationRule(),
+            };
+
+            var calc = new RuleBasedFitnessCalculator(league, rules);
+            var fitness = calc.Calculate(season);
+            Console.Out.WriteLine("Fitness: {0}", fitness);
+            Console.Out.WriteLine(string.Empty);
 
             Console.ReadKey();
                 

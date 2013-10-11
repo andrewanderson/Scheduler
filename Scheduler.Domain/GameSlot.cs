@@ -8,6 +8,7 @@ namespace Scheduler.Domain
 {
     public class GameSlot
     {
+        public string Id { get; set; }
         public Field Field { get; set; }
         public string StartTime { get; set; }
     }

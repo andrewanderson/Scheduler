@@ -39,9 +39,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RuleBasedFitnessCalculator.cs" />
+    <Compile Include="PrimordialSoup.cs" />
     <Compile Include="RandomProvider.cs" />
+    <Compile Include="Rules\GameslotAllocationRule.cs" />
+    <Compile Include="Rules\GameSpacingRule.cs" />
     <Compile Include="Rules\IRule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rules\RepeatGameRule.cs" />
+    <Compile Include="Rules\ValidScheduleRule.cs" />
     <Compile Include="SeasonFactory.cs" />
   </ItemGroup>
   <ItemGroup>
