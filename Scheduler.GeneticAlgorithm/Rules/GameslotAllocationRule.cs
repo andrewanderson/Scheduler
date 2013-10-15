@@ -51,16 +51,16 @@ namespace Scheduler.GeneticAlgorithm.Rules
                 foreach (var game in week.Games)
                 {
                     teamSlots[game.Home.Name][game.Slot.Id] = teamSlots[game.Home.Name][game.Slot.Id] + 1;
+                    teamSlots[game.Away.Name][game.Slot.Id] = teamSlots[game.Away.Name][game.Slot.Id] + 1;
                 }
             }
 
             // Calculate the penalty
-            foreach (var week in season.Weeks)
+            foreach (var teamDict in teamSlots.Values)
             {
-                foreach (var game in week.Games)
+                foreach (var numGamesInSlot in teamDict.Values)
                 {
-                    var gamesInSlot = teamSlots[game.Home.Name][game.Slot.Id];
-                    if (gamesInSlot < this.minimumOptimalGames || gamesInSlot > this.maximumOptimalGames)
+                    if (numGamesInSlot < this.minimumOptimalGames || numGamesInSlot > this.maximumOptimalGames)
                     {
                         totalPenalty += PenaltyPerInfraction;
                     }

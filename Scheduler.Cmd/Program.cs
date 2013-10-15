@@ -35,7 +35,7 @@ namespace Scheduler.Cmd
 
             for (int i = 0; i < season.Weeks.Count; i++)
             {
-                Console.Out.WriteLine("Week {0}", i);
+                Console.Out.WriteLine("Week {0}", i+1);
                 var week = season.Weeks[i];
                 foreach (var game in week.Games)
                 {
@@ -45,8 +45,9 @@ namespace Scheduler.Cmd
             }
 
             var rules = new List<IRule> {
-                new ValidScheduleRule() ,
+                new ValidScheduleRule(),
                 new GameslotAllocationRule(),
+                new RepeatGameRule(),
             };
 
             var calc = new RuleBasedFitnessCalculator(league, rules);
