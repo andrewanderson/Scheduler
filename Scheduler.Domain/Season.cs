@@ -14,5 +14,11 @@ namespace Scheduler.Domain
         }
 
         public List<Schedule> Weeks { get; private set; }
+
+        /// <summary>
+        /// The score assigned to show how relatively desirable this schedule is based on a
+        /// calculation provided by the consumer of this class.
+        /// </summary>
+        public int Fitness { get; set; }
     }
 }

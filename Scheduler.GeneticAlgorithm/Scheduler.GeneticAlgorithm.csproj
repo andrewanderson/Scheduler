@@ -46,7 +46,10 @@
     <Compile Include="Rules\GameSpacingRule.cs" />
     <Compile Include="Rules\IRule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rules\MatchupGameslotRule.cs" />
     <Compile Include="Rules\RepeatGameRule.cs" />
+    <Compile Include="Rules\SpecificGameslotRule.cs" />
+    <Compile Include="Rules\TeamsInConsecutiveSlotsRule.cs" />
     <Compile Include="Rules\ValidScheduleRule.cs" />
     <Compile Include="SeasonFactory.cs" />
   </ItemGroup>

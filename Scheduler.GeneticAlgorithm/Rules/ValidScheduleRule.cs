@@ -14,7 +14,7 @@ namespace Scheduler.GeneticAlgorithm.Rules
     /// </summary>
     public class ValidScheduleRule : IRule
     {
-        private const int Penalty = -1000;
+        private const int Reward = 2000;
 
         public void Initialize(League league)
         {
@@ -25,7 +25,7 @@ namespace Scheduler.GeneticAlgorithm.Rules
         {
             foreach (var schedule in season.Weeks)
             {
-                if (!IsValid(schedule)) return Penalty;
+                if (IsValid(schedule)) return Reward;
             }
 
             return 0;

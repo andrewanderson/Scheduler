@@ -32,7 +32,7 @@ namespace Scheduler.GeneticAlgorithm.Rules
             this.minimumOptimalGamesPerOpponent = (int)Math.Floor((double)league.Duration / (double)(league.Teams.Count - 1));
             this.maximumOptimalGamesPerOpponent = minimumOptimalGamesPerOpponent + 1;
 
-            // Store the teams & game slots for quick access later
+            // Store the teams for quick access later
             this.teamNames.AddRange(league.Teams.Select(t => t.Name));
         }
                 

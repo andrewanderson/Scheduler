@@ -48,6 +48,10 @@ namespace Scheduler.Cmd
                 new ValidScheduleRule(),
                 new GameslotAllocationRule(),
                 new RepeatGameRule(),
+                new GameSpacingRule(),
+                new SpecificGameslotRule(league.Teams[0], league.GameSlots[0], 4),
+                new TeamsInConsecutiveSlotsRule(league.Teams[1], league.Teams[2]),
+                new MatchupGameslotRule(league.Teams[1], league.Teams[2], new List<GameSlot> { league.GameSlots[0], league.GameSlots[1] }),
             };
 
             var calc = new RuleBasedFitnessCalculator(league, rules);
