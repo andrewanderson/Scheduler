@@ -10,7 +10,7 @@ namespace Scheduler.GeneticAlgorithm.Reproduction
     /// <summary>
     /// Cross two Seasons at a single point to create two new offspring.
     /// </summary>
-    public class SinglePointCrossover
+    public class SinglePointCrossover : ICrossoverAlgorithm
     {
         public List<Season> Breed(Season parent1, Season parent2)
         {

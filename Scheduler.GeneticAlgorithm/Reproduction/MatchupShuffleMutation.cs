@@ -10,7 +10,7 @@ namespace Scheduler.GeneticAlgorithm.Reproduction
     /// <summary>
     /// Rearrange all of the matchups within a single week of the season
     /// </summary>
-    public class MatchupShuffleMutation
+    public class MatchupShuffleMutation : IMutationAlgorithm
     {
         private readonly List<Team> teams;
         private readonly List<GameSlot> slots;

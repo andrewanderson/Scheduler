@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace Scheduler.Cmd
         {
             var field = new Field { Name = "Ben Franklin" };
 
-            var league = new League { Duration = 10 };
+            var league = new League { Duration = 20 };
             league.Teams.Add(new Team { Name = "Team 1" });
             league.Teams.Add(new Team { Name = "Team 2" });
             league.Teams.Add(new Team { Name = "Team 3" });
@@ -31,47 +32,52 @@ namespace Scheduler.Cmd
             league.GameSlots.Add(new GameSlot { Id = "8:30", Field = field, StartTime = "8:30" });
             league.GameSlots.Add(new GameSlot { Id = "9:45", Field = field, StartTime = "9:45" });
 
-            var factory = new SeasonFactory(league);
-
-            var rules = new List<IRule> {
-                new ValidScheduleRule(),
-                new GameslotAllocationRule(),
-                new RepeatGameRule(),
-                new GameSpacingRule(),
+            var customRules = new List<IRule> {
                 new SpecificGameslotRule(league.Teams[0], league.GameSlots[0], 4),
                 new TeamsInConsecutiveSlotsRule(league.Teams[1], league.Teams[2]),
                 new MatchupGameslotRule(league.Teams[1], league.Teams[2], new List<GameSlot> { league.GameSlots[0], league.GameSlots[1] }),
             };
 
-            var calc = new RuleBasedFitnessCalculator(league, rules);
+            var geneticAlgorithm = new PrimordialSoup(league, customRules, 5000);
+            geneticAlgorithm.Initialize();
+
+            geneticAlgorithm.GenerationComplete += geneticAlgorithm_GenerationComplete;
             
-            
-            var season1 = factory.GenerateRandom();
-            Console.Out.WriteLine("Parent 1");
-            PrintSeason(season1);
-            CalculateAndPrintFitness(season1, calc);
+            char key = '?';
+            while (key != 'q') 
+            {
+                if (key == 'r')
+                {
+                    geneticAlgorithm.Run(10000);
 
-            var season2 = factory.GenerateRandom();
-            Console.Out.WriteLine("Parent 2");
-            PrintSeason(season2);
-            CalculateAndPrintFitness(season2, calc);
+                    var topSeason = geneticAlgorithm.CurrentPopulation.First();
+                    Console.Out.WriteLine();
+                    Console.Out.WriteLine("Top Season");
+                    Console.Out.WriteLine("----------");
+                    Console.Out.WriteLine();
+                    PrintSeason(topSeason, Console.Out);
+                }
+                else if (key == 's')
+                {
 
-            var mutate = new SinglePointCrossover();
-            var children = mutate.Breed(season1, season2);
+                }
 
-            Console.Out.WriteLine("Child 1");
-            PrintSeason(children[0]);
-            CalculateAndPrintFitness(children[0], calc);
+                Console.Out.WriteLine();
+                Console.Out.WriteLine("Pick: (r)un 10000 generations, (s)ave to a file, (q)uit");
+                Console.Out.Write(">>> ");
 
-            Console.Out.WriteLine("Child 2");
-            PrintSeason(children[1]);
-            CalculateAndPrintFitness(children[1], calc);
-            
-            Console.ReadKey();
-                
+                key = Console.ReadKey().KeyChar;
+                Console.Out.WriteLine();
+            }
         }
 
-        private static void PrintSeason(Season season)
+        static void geneticAlgorithm_GenerationComplete(object sender, EventArgs e)
+        {
+            var gea = e as GenerationEventArgs;
+            Console.Out.WriteLine("Generation {0} Completed - top fitness: {1}", gea.Generation, gea.MostFitSeason.Fitness);
+        }
+
+        private static void PrintSeason(Season season, TextWriter destination) 
         {
             for (int i = 0; i < season.Weeks.Count; i++)
             {
@@ -83,12 +89,7 @@ namespace Scheduler.Cmd
                 }
                 Console.Out.WriteLine(string.Empty);
             }
-        }
-
-        private static void CalculateAndPrintFitness(Season season, RuleBasedFitnessCalculator ruleCalculator)
-        {
-            var fitness = ruleCalculator.Calculate(season);
-            Console.Out.WriteLine("Fitness: {0}", fitness);
+            Console.Out.WriteLine("Fitness: {0}", season.Fitness);
             Console.Out.WriteLine(string.Empty);
         }
 

@@ -10,7 +10,7 @@ namespace Scheduler.GeneticAlgorithm.Reproduction
     /// <summary>
     /// Mutate a Season by shuffling the position of one or more Schedules.
     /// </summary>
-    public class ScheduleShuffleMutation
+    public class ScheduleShuffleMutation : IMutationAlgorithm
     {
         private const int MaximumShuffles = 3;
 

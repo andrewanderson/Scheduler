@@ -10,7 +10,7 @@ namespace Scheduler.GeneticAlgorithm.Reproduction
     /// <summary>
     /// Mutate a Season by shuffling individual games within a single Schedule
     /// </summary>
-    public class GameShuffleMutation
+    public class GameShuffleMutation : IMutationAlgorithm
     {       
         public Season Mutate(Season originalSeason)
         {

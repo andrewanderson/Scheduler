@@ -10,6 +10,8 @@ namespace Scheduler.GeneticAlgorithm
 {
     /// <summary>
     /// Determines the fitness of a Season by using a configurable set of rules.
+    /// 
+    /// Zero is the lowest fitness that a Season can have under this algorithm.
     /// </summary>
     public class RuleBasedFitnessCalculator
     {
@@ -26,7 +28,7 @@ namespace Scheduler.GeneticAlgorithm
         
         public int Calculate(Season season)
         {
-            return rules.Sum(r => r.Apply(season));
+            return Math.Max(0, rules.Sum(r => r.Apply(season)));
         }
     }
 }

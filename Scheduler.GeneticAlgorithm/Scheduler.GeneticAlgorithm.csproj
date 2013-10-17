@@ -40,7 +40,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FisherYatesShuffleAlgorithm.cs" />
+    <Compile Include="GenerationEventArgs.cs" />
     <Compile Include="Reproduction\GameShuffleMutation.cs" />
+    <Compile Include="Reproduction\ICrossoverAlgorithm.cs" />
+    <Compile Include="Reproduction\IMutationAlgorithm.cs" />
     <Compile Include="Reproduction\MatchupShuffleMutation.cs" />
     <Compile Include="Reproduction\ScheduleShuffleMutation.cs" />
     <Compile Include="Reproduction\SinglePointCrossover.cs" />
