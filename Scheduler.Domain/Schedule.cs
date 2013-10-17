@@ -14,5 +14,18 @@ namespace Scheduler.Domain
         }
 
         public List<Matchup> Games { get; private set; }
+
+        /// <summary>
+        /// Make a clone of this Schedule
+        /// </summary>
+        public Schedule DeepCopy()
+        {
+            var newSchedule = new Schedule();
+            foreach (var originalGame in this.Games)
+            {
+                newSchedule.Games.Add(originalGame.ShallowCopy());
+            }
+            return newSchedule;
+        }
     }
 }

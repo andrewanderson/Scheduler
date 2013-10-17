@@ -20,5 +20,19 @@ namespace Scheduler.Domain
         /// calculation provided by the consumer of this class.
         /// </summary>
         public int Fitness { get; set; }
+
+        /// <summary>
+        /// Make a clone of this Season
+        /// </summary>
+
+        public Season DeepCopy()
+        {
+            var newSeason = new Season();
+            foreach (var originalWeek in this.Weeks)
+            {
+                newSeason.Weeks.Add(originalWeek.DeepCopy());
+            }
+            return newSeason;
+        }
     }
 }

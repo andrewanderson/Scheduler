@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Scheduler.Domain;
 using Scheduler.GeneticAlgorithm;
+using Scheduler.GeneticAlgorithm.Reproduction;
 using Scheduler.GeneticAlgorithm.Rules;
 
 namespace Scheduler.Cmd
@@ -31,18 +32,6 @@ namespace Scheduler.Cmd
             league.GameSlots.Add(new GameSlot { Id = "9:45", Field = field, StartTime = "9:45" });
 
             var factory = new SeasonFactory(league);
-            var season = factory.GenerateRandom();
-
-            for (int i = 0; i < season.Weeks.Count; i++)
-            {
-                Console.Out.WriteLine("Week {0}", i+1);
-                var week = season.Weeks[i];
-                foreach (var game in week.Games)
-                {
-                    Console.Out.WriteLine("{0} - {1} vs {2}", game.Slot.StartTime, game.Home.Name, game.Away.Name);
-                }
-                Console.Out.WriteLine(string.Empty);
-            }
 
             var rules = new List<IRule> {
                 new ValidScheduleRule(),
@@ -55,12 +44,53 @@ namespace Scheduler.Cmd
             };
 
             var calc = new RuleBasedFitnessCalculator(league, rules);
-            var fitness = calc.Calculate(season);
-            Console.Out.WriteLine("Fitness: {0}", fitness);
-            Console.Out.WriteLine(string.Empty);
+            
+            
+            var season1 = factory.GenerateRandom();
+            Console.Out.WriteLine("Parent 1");
+            PrintSeason(season1);
+            CalculateAndPrintFitness(season1, calc);
 
+            var season2 = factory.GenerateRandom();
+            Console.Out.WriteLine("Parent 2");
+            PrintSeason(season2);
+            CalculateAndPrintFitness(season2, calc);
+
+            var mutate = new SinglePointCrossover();
+            var children = mutate.Breed(season1, season2);
+
+            Console.Out.WriteLine("Child 1");
+            PrintSeason(children[0]);
+            CalculateAndPrintFitness(children[0], calc);
+
+            Console.Out.WriteLine("Child 2");
+            PrintSeason(children[1]);
+            CalculateAndPrintFitness(children[1], calc);
+            
             Console.ReadKey();
                 
         }
+
+        private static void PrintSeason(Season season)
+        {
+            for (int i = 0; i < season.Weeks.Count; i++)
+            {
+                Console.Out.WriteLine("Week {0}", i + 1);
+                var week = season.Weeks[i];
+                foreach (var game in week.Games)
+                {
+                    Console.Out.WriteLine("{0} - {1} vs {2}", game.Slot.StartTime, game.Home.Name, game.Away.Name);
+                }
+                Console.Out.WriteLine(string.Empty);
+            }
+        }
+
+        private static void CalculateAndPrintFitness(Season season, RuleBasedFitnessCalculator ruleCalculator)
+        {
+            var fitness = ruleCalculator.Calculate(season);
+            Console.Out.WriteLine("Fitness: {0}", fitness);
+            Console.Out.WriteLine(string.Empty);
+        }
+
     }
 }

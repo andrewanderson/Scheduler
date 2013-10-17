@@ -32,24 +32,13 @@ namespace Scheduler.GeneticAlgorithm
         }
 
         /// <summary>
-        /// Use a Fisher-Yates shuffle to generate a random schedule from the list of teams.
+        /// Generate a random schedule from the list of teams in a league.
+        /// 
+        /// All teams are guaranteed to play exactly once per week.
         /// </summary>
-        /// <remarks>
-        /// http://www.dotnetperls.com/fisher-yates-shuffle
-        /// </remarks>
         private Schedule GenerateSchedule()
         {
-            var teams = new List<Team>(this.league.Teams);
-
-            for (int i = teams.Count; i > 1; i--)
-            {
-                // Pick random element to swap.
-                int j = RandomProvider.Next(i); // 0 <= j <= i-1
-                // Swap.
-                Team tmp = teams[j];
-                teams[j] = teams[i - 1];
-                teams[i - 1] = tmp;
-            }
+            var teams = FisherYatesShuffleAlgorithm.Shuffle(this.league.Teams);
 
             var schedule = new Schedule();
             for (int i = 0; i < (teams.Count / 2); i++)

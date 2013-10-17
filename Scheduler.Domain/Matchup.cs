@@ -11,5 +11,13 @@ namespace Scheduler.Domain
         public GameSlot Slot { get; set; }
         public Team Home { get; set; }
         public Team Away { get; set; }
+
+        /// <summary>
+        /// Make a copy of this Schedule
+        /// </summary>
+        public Matchup ShallowCopy()
+        {
+            return new Matchup { Home = this.Home, Away = this.Away, Slot = this.Slot };
+        }
     }
 }

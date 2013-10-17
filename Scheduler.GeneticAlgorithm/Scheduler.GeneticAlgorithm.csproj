@@ -39,6 +39,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FisherYatesShuffleAlgorithm.cs" />
+    <Compile Include="Reproduction\GameShuffleMutation.cs" />
+    <Compile Include="Reproduction\MatchupShuffleMutation.cs" />
+    <Compile Include="Reproduction\ScheduleShuffleMutation.cs" />
+    <Compile Include="Reproduction\SinglePointCrossover.cs" />
     <Compile Include="RuleBasedFitnessCalculator.cs" />
     <Compile Include="PrimordialSoup.cs" />
     <Compile Include="RandomProvider.cs" />
