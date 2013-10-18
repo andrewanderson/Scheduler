@@ -21,13 +21,11 @@ namespace Scheduler.GeneticAlgorithm.Reproduction
             this.slots = league.GameSlots;
         }
 
-        public Season Mutate(Season originalSeason)
+        public void Mutate(Season season)
         {
-            var newSeason = originalSeason.DeepCopy();
+            int weekToShuffle = RandomProvider.Next(season.Weeks.Count);
 
-            int weekToShuffle = RandomProvider.Next(newSeason.Weeks.Count);
-
-            var week = newSeason.Weeks[weekToShuffle];
+            var week = season.Weeks[weekToShuffle];
             week.Games.Clear();
             
             var shuffledTeams = FisherYatesShuffleAlgorithm.Shuffle(this.teams);
@@ -35,8 +33,6 @@ namespace Scheduler.GeneticAlgorithm.Reproduction
             {
                 week.Games.Add(new Matchup { Home = shuffledTeams[i * 2], Away = shuffledTeams[i * 2 + 1], Slot = this.slots[i] });
             }
-
-            return newSeason;
         }
     }
 }

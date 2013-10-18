@@ -9,6 +9,9 @@ namespace Scheduler.GeneticAlgorithm.Reproduction
 {
     public interface IMutationAlgorithm
     {
-        Season Mutate(Season originalSeason);
+        /// <summary>
+        /// Destructively mutate a Season
+        /// </summary>
+        void Mutate(Season originalSeason);
     }
 }

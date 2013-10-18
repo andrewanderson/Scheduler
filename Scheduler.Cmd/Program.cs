@@ -13,57 +13,75 @@ namespace Scheduler.Cmd
 {
     public class Program
     {
+        private const int PopulationSize = 2500;
+        private const int GenerationIncrement = 10000;
+        private const bool AutoSave = true;
+        private const int AutoSaveIncrement = 100;
+
+        private static PrimordialSoup GeneticAlgorithm = null;
+        private static string RunId = null;
+        private static League BfpLeague = null;
+
         public static void Main(string[] args)
         {
             var field = new Field { Name = "Ben Franklin" };
 
-            var league = new League { Duration = 20 };
-            league.Teams.Add(new Team { Name = "Team 1" });
-            league.Teams.Add(new Team { Name = "Team 2" });
-            league.Teams.Add(new Team { Name = "Team 3" });
-            league.Teams.Add(new Team { Name = "Team 4" });
-            league.Teams.Add(new Team { Name = "Team 5" });
-            league.Teams.Add(new Team { Name = "Team 6" });
-            league.Teams.Add(new Team { Name = "Team 7" });
-            league.Teams.Add(new Team { Name = "Team 8" });
+            BfpLeague = new League { Duration = 20 };
+            BfpLeague.Teams.Add(new Team { Name = "A" });
+            BfpLeague.Teams.Add(new Team { Name = "B" });
+            BfpLeague.Teams.Add(new Team { Name = "C" });
+            BfpLeague.Teams.Add(new Team { Name = "D" });
+            BfpLeague.Teams.Add(new Team { Name = "E" });
+            BfpLeague.Teams.Add(new Team { Name = "F" });
+            BfpLeague.Teams.Add(new Team { Name = "G" });
+            BfpLeague.Teams.Add(new Team { Name = "H" });
 
-            league.GameSlots.Add(new GameSlot { Id = "6:00", Field = field, StartTime = "6:00" });
-            league.GameSlots.Add(new GameSlot { Id = "7:15", Field = field, StartTime = "7:15" });
-            league.GameSlots.Add(new GameSlot { Id = "8:30", Field = field, StartTime = "8:30" });
-            league.GameSlots.Add(new GameSlot { Id = "9:45", Field = field, StartTime = "9:45" });
+            BfpLeague.GameSlots.Add(new GameSlot { Id = "6:00", Field = field, StartTime = "6:00" });
+            BfpLeague.GameSlots.Add(new GameSlot { Id = "7:15", Field = field, StartTime = "7:15" });
+            BfpLeague.GameSlots.Add(new GameSlot { Id = "8:30", Field = field, StartTime = "8:30" });
+            BfpLeague.GameSlots.Add(new GameSlot { Id = "9:45", Field = field, StartTime = "9:45" });
 
             var customRules = new List<IRule> {
-                new SpecificGameslotRule(league.Teams[0], league.GameSlots[0], 4),
-                new TeamsInConsecutiveSlotsRule(league.Teams[1], league.Teams[2]),
-                new MatchupGameslotRule(league.Teams[1], league.Teams[2], new List<GameSlot> { league.GameSlots[0], league.GameSlots[1] }),
+                new SpecificGameslotRule(BfpLeague.Teams[0], BfpLeague.GameSlots[0], 4),
+                new TeamsInConsecutiveSlotsRule(BfpLeague.Teams[1], BfpLeague.Teams[2]),
+                new MatchupGameslotRule(BfpLeague.Teams[1], BfpLeague.Teams[2], new List<GameSlot> { BfpLeague.GameSlots[0], BfpLeague.GameSlots[1] }),
             };
 
-            var geneticAlgorithm = new PrimordialSoup(league, customRules, 5000);
-            geneticAlgorithm.Initialize();
+            GeneticAlgorithm = new PrimordialSoup(BfpLeague, customRules, PopulationSize);
+            GeneticAlgorithm.Initialize();
 
-            geneticAlgorithm.GenerationComplete += geneticAlgorithm_GenerationComplete;
+            GeneticAlgorithm.GenerationComplete += geneticAlgorithm_GenerationComplete;
             
             char key = '?';
             while (key != 'q') 
             {
+                if (key == 's' || (key == 'r' && AutoSave == true && RunId == null))
+                {
+                    if (RunId == null)
+                    {
+                        Console.Out.WriteLine("Choose a name for this run (letters & numbers only)");
+                        Console.Out.Write(">>> ");
+                        RunId = Console.ReadLine();
+                    }
+
+                    if (key != 'r')
+                        SaveState(GeneticAlgorithm, RunId, BfpLeague);
+                }
+
                 if (key == 'r')
                 {
-                    geneticAlgorithm.Run(10000);
+                    GeneticAlgorithm.Run(GenerationIncrement);
 
-                    var topSeason = geneticAlgorithm.CurrentPopulation.First();
+                    var topSeason = GeneticAlgorithm.CurrentPopulation.First();
                     Console.Out.WriteLine();
                     Console.Out.WriteLine("Top Season");
                     Console.Out.WriteLine("----------");
                     Console.Out.WriteLine();
                     PrintSeason(topSeason, Console.Out);
                 }
-                else if (key == 's')
-                {
-
-                }
 
                 Console.Out.WriteLine();
-                Console.Out.WriteLine("Pick: (r)un 10000 generations, (s)ave to a file, (q)uit");
+                Console.Out.WriteLine("Pick: (r)un {0} generations, (s)ave to a file, (q)uit", GenerationIncrement);
                 Console.Out.Write(">>> ");
 
                 key = Console.ReadKey().KeyChar;
@@ -75,23 +93,209 @@ namespace Scheduler.Cmd
         {
             var gea = e as GenerationEventArgs;
             Console.Out.WriteLine("Generation {0} Completed - top fitness: {1}", gea.Generation, gea.MostFitSeason.Fitness);
+
+            if (AutoSave && gea.Generation % AutoSaveIncrement == 0)
+            {
+                SaveState(GeneticAlgorithm, RunId, BfpLeague);
+            }
         }
 
-        private static void PrintSeason(Season season, TextWriter destination) 
+        private static void SaveState(PrimordialSoup geneticAlgorithm, string runId, League league)
+        {
+            var seasons = new Dictionary<string, SeasonReport>();
+
+            if (!Directory.Exists(runId))
+            {
+                Directory.CreateDirectory(runId);
+            }
+            string fileName = Path.Combine(runId, "generation" + geneticAlgorithm.CurrentGeneration + "_" + geneticAlgorithm.CurrentPopulation.First().Fitness + ".txt");
+            using (var writer = File.CreateText(fileName)) 
+            {
+                writer.WriteLine("Report for generation {0}", geneticAlgorithm.CurrentGeneration);
+                writer.WriteLine("======================================");
+                writer.WriteLine();
+
+                // Gather a list of all Seasons
+                
+                foreach (var season in geneticAlgorithm.CurrentPopulation)
+                {
+                    string thumbprint = Thumbprint(season);
+
+                    if (!seasons.ContainsKey(thumbprint))
+                    {
+                        var sr = new SeasonReport { Index = seasons.Count + 1, Occurences = 1, Season = season, Thumbprint = thumbprint };
+                        seasons.Add(thumbprint, sr);
+                    }
+                    else
+                    {
+                        var sr = seasons[thumbprint];
+                        sr.Occurences++;
+                    }
+                }
+
+                // Now print them all out
+                foreach (var sr in seasons.Values.OrderBy(x => x.Index))
+                {
+                    PrintSessionWithStats(writer, sr, geneticAlgorithm.CurrentPopulation.Count);
+                }
+            }
+
+            string advancedStatsPath = Path.Combine(runId, "generation" + geneticAlgorithm.CurrentGeneration + "_advanced.txt");
+            using (var writer = File.CreateText(advancedStatsPath))
+            {
+                writer.WriteLine("Top 10 seasons for generation {0}", geneticAlgorithm.CurrentGeneration);
+                writer.WriteLine("======================================");
+                writer.WriteLine();
+
+                foreach (var sr in seasons.Values.OrderBy(x => x.Index).Take(10))
+                {
+                    PrintAdvancedSeasonStats(writer, sr, geneticAlgorithm, league);
+                }
+            }
+        }
+
+        private static void PrintSeason(Season season, TextWriter destination)
         {
             for (int i = 0; i < season.Weeks.Count; i++)
             {
-                Console.Out.WriteLine("Week {0}", i + 1);
+                destination.WriteLine("Week {0}", i + 1);
                 var week = season.Weeks[i];
-                foreach (var game in week.Games)
+                foreach (var game in week.Games.OrderBy(g => g.Slot.Id))
                 {
-                    Console.Out.WriteLine("{0} - {1} vs {2}", game.Slot.StartTime, game.Home.Name, game.Away.Name);
+                    destination.WriteLine("{0} - {1} vs {2}", game.Slot.StartTime, game.Home.Name, game.Away.Name);
                 }
-                Console.Out.WriteLine(string.Empty);
+                destination.WriteLine(string.Empty);
             }
-            Console.Out.WriteLine("Fitness: {0}", season.Fitness);
-            Console.Out.WriteLine(string.Empty);
+            destination.WriteLine(string.Empty);
         }
 
+        private static void PrintSessionWithStats(TextWriter writer, SeasonReport sr, int populationSize)
+        {
+            var percentOfTotal = ((double)sr.Occurences / (double)populationSize) * 100.0;
+
+            writer.WriteLine("=============================================");
+            writer.WriteLine("Season #{0} - {1} fitness,  {2}%", sr.Index, sr.Season.Fitness, Math.Round(percentOfTotal, 4));
+            writer.WriteLine("=============================================");
+            PrintSeason(sr.Season, writer);
+        }
+
+        private static void PrintAdvancedSeasonStats(TextWriter writer, SeasonReport sr, PrimordialSoup ga, League league)
+        {
+            PrintSessionWithStats(writer, sr, ga.CurrentPopulation.Count);
+
+            var slotAllocation = new Dictionary<string, Dictionary<string, int>>();
+            var opponentProgression = new Dictionary<string, StringBuilder>();
+            var opponentDistribution = new Dictionary<string, Dictionary<string, int>>();
+            foreach (var team in league.Teams)
+            {
+                slotAllocation.Add(team.Name, new Dictionary<string, int>());
+                opponentProgression.Add(team.Name, new StringBuilder());
+                opponentDistribution.Add(team.Name, new Dictionary<string, int>());
+                foreach (var slot in league.GameSlots)
+                {
+                    slotAllocation[team.Name].Add(slot.Id, 0);
+                }
+                foreach (var opponent in league.Teams.Where(t => t.Name != team.Name))
+                {
+                    opponentDistribution[team.Name].Add(opponent.Name, 0);
+                }
+            }
+            foreach (var week in sr.Season.Weeks)
+            {
+                foreach (var game in week.Games)
+                {
+                    slotAllocation[game.Home.Name][game.Slot.Id]++;
+                    slotAllocation[game.Away.Name][game.Slot.Id]++;
+
+                    opponentProgression[game.Home.Name].Append(game.Away.Name + "->");
+                    opponentProgression[game.Away.Name].Append(game.Home.Name + "->");
+
+                    opponentDistribution[game.Home.Name][game.Away.Name]++;
+                    opponentDistribution[game.Away.Name][game.Home.Name]++;
+                }
+            }
+
+            writer.WriteLine("Game slot allocation");
+            writer.WriteLine("--------------------");
+            foreach (var team in league.Teams)
+            {
+                writer.Write("{0}: ", team.Name);
+                foreach (var slot in league.GameSlots)
+                {
+                    writer.Write("{0} - {1}, ", slot.StartTime, slotAllocation[team.Name][slot.Id]);    
+                }
+                writer.WriteLine();
+            }
+            writer.WriteLine();
+            writer.WriteLine("Opponent distribution");
+            writer.WriteLine("---------------------");
+            foreach (var team in league.Teams)
+            {
+                writer.Write("{0}: ", team.Name);
+                foreach (var opponent in league.Teams.Where(t => t.Name != team.Name))
+                {
+                    writer.Write("{0} - {1}, ", opponent.Name, opponentDistribution[team.Name][opponent.Name].ToString());
+                }
+                writer.WriteLine();
+            }
+            writer.WriteLine();
+            writer.WriteLine("Opponent progression");
+            writer.WriteLine("--------------------");
+            foreach (var team in league.Teams)
+            {
+                writer.WriteLine("{0}: {1}", team.Name, opponentProgression[team.Name].ToString());
+            }
+            writer.WriteLine();
+            writer.WriteLine("Rule scoring");
+            writer.WriteLine("------------");
+            foreach (var rule in ga.Rules)
+            {
+                int score = rule.Apply(sr.Season);
+                writer.WriteLine("{0}: {1}", rule.GetType().Name, score);
+            }
+            writer.WriteLine();
+        }
+
+        private static Dictionary<string, string> teamKeys = null;
+        private static string Thumbprint(Season season)
+        {
+            if (teamKeys == null)
+            {
+                teamKeys = new Dictionary<string, string>();
+                var week = season.Weeks.First();
+                int key = 1;
+                foreach (var game in week.Games)
+                {
+                    teamKeys.Add(game.Home.Name, key.ToString());
+                    key++;
+                    teamKeys.Add(game.Away.Name, key.ToString());
+                    key++;
+                }
+                
+            }
+
+            var sb = new StringBuilder();
+            foreach (var week in season.Weeks)
+            {
+                foreach (var game in week.Games)
+                {
+                    // normalize the order of the games.  A vs B == B vs A (for now)
+                    string homeKey = teamKeys[game.Home.Name];
+                    string awayKey = teamKeys[game.Away.Name];
+
+                    if (homeKey.CompareTo(awayKey) > 0)
+                    {
+                        sb.Append(homeKey);
+                        sb.Append(awayKey);
+                    }
+                    else
+                    {
+                        sb.Append(awayKey);
+                        sb.Append(homeKey);
+                    }
+                }
+            }
+            return sb.ToString();
+        }
     }
 }

@@ -12,16 +12,12 @@ namespace Scheduler.GeneticAlgorithm.Reproduction
     /// </summary>
     public class GameShuffleMutation : IMutationAlgorithm
     {       
-        public Season Mutate(Season originalSeason)
+        public void Mutate(Season season)
         {
-            var newSeason = originalSeason.DeepCopy();
+            int weekToShuffle = RandomProvider.Next(season.Weeks.Count);
 
-            int weekToShuffle = RandomProvider.Next(newSeason.Weeks.Count);
-
-            var week = newSeason.Weeks[weekToShuffle];
+            var week = season.Weeks[weekToShuffle];
             FisherYatesShuffleAlgorithm.ShuffleDestructive(week.Games);
-
-            return newSeason;
         }
 
     }

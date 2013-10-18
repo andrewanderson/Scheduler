@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,6 +49,17 @@ namespace Scheduler.GeneticAlgorithm
         /// The number of generations that have elapsed since Initialize was called.
         /// </summary>
         public int CurrentGeneration { get; private set; }
+
+        /// <summary>
+        /// An immutable list of the rules that govern agent fitness within the algorithm.
+        /// </summary>
+        public ReadOnlyCollection<IRule> Rules 
+        {
+            get
+            {
+                return this.rules.AsReadOnly();
+            }
+        }
 
         /// <summary>
         /// Notification that a generation has completed.
@@ -140,7 +152,7 @@ namespace Scheduler.GeneticAlgorithm
             // without changing them
             for (int i = 0; i < AutomaticGenerationHoppers; i++)
             {
-                this.Register(parentGeneration[i]);
+                this.Register(parentGeneration[i].DeepCopy());
             }
 
             // Select pairs of Seasons to populate the new generation.
@@ -160,7 +172,7 @@ namespace Scheduler.GeneticAlgorithm
                 }
                 else
                 {
-                    children = new List<Season> { parent1, parent2 };
+                    children = new List<Season> { parent1.DeepCopy(), parent2.DeepCopy() };
                 }
 
                 // Mutation (separate chance for each child)
