@@ -35,11 +35,11 @@ namespace Scheduler.GeneticAlgorithm.Rules
             // match-up is.
             for (int i = 0; i < this.optimialMinimumSpaceBetweenOpponents; i++)
             {
-                this.penaltyMatrix.Add(i * -2 + Math.Max(0, (i - 2)) * -5);
+                this.penaltyMatrix.Add(i * -2 + Math.Max(0, (i - 1)) * -5);
             }
 
             // For an 8 team league, the penalty matrix will be:
-            // 0, 2, 4, 11, 18, 25, 32
+            // 0, 2, 9, 16, 23, 30, 37
         }
           
         public int Apply(Season season)

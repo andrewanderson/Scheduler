@@ -31,7 +31,7 @@ namespace Scheduler.GeneticAlgorithm.Rules
             // 15 game season, 4 slots: each team should play 3 games in one slot, and 4 games in the other 3 slots
             // 13 game season, 4 slots: each team should play 3 games in three slots, and 4 games in the other slot
             this.minimumOptimalGames = (int)Math.Floor((double)league.Duration / (double)league.GameSlots.Count);
-            this.maximumOptimalGames = minimumOptimalGames + 1;
+            this.maximumOptimalGames = (league.Duration % league.GameSlots.Count == 0) ? minimumOptimalGames : minimumOptimalGames + 1;
 
             // Store the teams & game slots for quick access later
             this.teamNames.AddRange(league.Teams.Select(t => t.Name));

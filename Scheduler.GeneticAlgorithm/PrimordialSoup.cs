@@ -33,7 +33,7 @@ namespace Scheduler.GeneticAlgorithm
         private const int AutomaticGenerationHoppers = 50;
 
         private const double CrossOverPercent = 0.7;
-        private const double MutationPercent = 0.005;
+        private const double MutationPercent = 0.0075;
 
         private readonly List<ICrossoverAlgorithm> crossoverAlgorithms;
         private readonly List<IMutationAlgorithm> mutationAlgorithms;

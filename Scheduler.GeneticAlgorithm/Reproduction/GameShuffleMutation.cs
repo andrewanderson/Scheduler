@@ -8,16 +8,19 @@ using Scheduler.Domain;
 namespace Scheduler.GeneticAlgorithm.Reproduction
 {
     /// <summary>
-    /// Mutate a Season by shuffling individual games within a single Schedule
+    /// Mutate a Season by shuffling individual games within a random percentage of the Schedules
     /// </summary>
     public class GameShuffleMutation : IMutationAlgorithm
-    {       
+    {
+        private const double shuffleChance = 0.5;
+
         public void Mutate(Season season)
         {
-            int weekToShuffle = RandomProvider.Next(season.Weeks.Count);
-
-            var week = season.Weeks[weekToShuffle];
-            FisherYatesShuffleAlgorithm.ShuffleDestructive(week.Games);
+            foreach (var week in season.Weeks)
+            {
+                if (RandomProvider.NextDouble() <= shuffleChance)
+                    FisherYatesShuffleAlgorithm.ShuffleDestructive(week.Games);
+            }
         }
 
     }
