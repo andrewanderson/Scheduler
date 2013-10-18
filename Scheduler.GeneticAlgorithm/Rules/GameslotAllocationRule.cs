@@ -11,12 +11,12 @@ namespace Scheduler.GeneticAlgorithm.Rules
     /// A rule that penalizes seasons where teams have an uneven distribution
     /// of game slots.
     /// 
-    /// 10 points per team are deducted for teams playing more/less than a
-    /// fair number of games in a given game slot.
+    /// 5 points per distance from the optimum value(s) are deducted per team per game slot.
+    /// e.g. a slot distribution of 5/6/5/4 (distance: 2) is less penalize than one of 10/2/3/5 (distance: 10)
     /// </summary>
     public class GameslotAllocationRule : IRule
     {
-        private const int PenaltyPerInfraction = -10;
+        private const int PenaltyMultiplier = -5;
 
         private int minimumOptimalGames = 0;
         private int maximumOptimalGames = 0;
@@ -40,7 +40,7 @@ namespace Scheduler.GeneticAlgorithm.Rules
           
         public int Apply(Season season)
         {
-            int totalPenalty = 0;
+            int cumulativeDistance = 0;
 
             // Pre-seed the mapping structure now so that we can avoid "contains" checks all through the code.
             var teamSlots = CreateMappingDictionary();
@@ -60,14 +60,18 @@ namespace Scheduler.GeneticAlgorithm.Rules
             {
                 foreach (var numGamesInSlot in teamDict.Values)
                 {
-                    if (numGamesInSlot < this.minimumOptimalGames || numGamesInSlot > this.maximumOptimalGames)
+                    if (numGamesInSlot < this.minimumOptimalGames)
                     {
-                        totalPenalty += PenaltyPerInfraction;
+                        cumulativeDistance += this.minimumOptimalGames - numGamesInSlot;
+                    }
+                    else if (numGamesInSlot > this.maximumOptimalGames)
+                    {
+                        cumulativeDistance += numGamesInSlot - this.maximumOptimalGames;
                     }
                 }
             }
 
-            return totalPenalty;
+            return cumulativeDistance * PenaltyMultiplier;
         }
 
         private Dictionary<string, Dictionary<string, int>> CreateMappingDictionary()
