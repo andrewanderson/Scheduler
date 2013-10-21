@@ -12,11 +12,9 @@ namespace Scheduler.GeneticAlgorithm.Reproduction
     /// </summary>
     public class ScheduleShuffleMutation : IMutationAlgorithm
     {
-        private const int MaximumShuffles = 3;
-
         public void Mutate(Season season)
         {
-            int shuffles = RandomProvider.Next(MaximumShuffles + 1); // could be 0
+            int shuffles = RandomProvider.Next(season.Weeks.Count / 2); // between 1 and half the number of weeks in the season
             for (int i = 0; i < shuffles; i++)
             {
                 // Perform a swap
