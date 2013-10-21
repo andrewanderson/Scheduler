@@ -21,9 +21,13 @@ namespace Scheduler.Cmd
         private static PrimordialSoup GeneticAlgorithm = null;
         private static string RunId = null;
         private static League BfpLeague = null;
+        private static bool IsVerboseMode = false;
 
         public static void Main(string[] args)
         {
+            if (args.Where(a => a.Equals("-v")).Any())
+                IsVerboseMode = true;
+
             var field = new Field { Name = "Ben Franklin" };
 
             BfpLeague = new League { Duration = 20 };
@@ -102,45 +106,49 @@ namespace Scheduler.Cmd
 
         private static void SaveState(PrimordialSoup geneticAlgorithm, string runId, League league)
         {
+            // Gather a list of all Seasons
             var seasons = new Dictionary<string, SeasonReport>();
+            foreach (var season in geneticAlgorithm.CurrentPopulation)
+            {
+                string thumbprint = Thumbprint(season);
 
+                if (!seasons.ContainsKey(thumbprint))
+                {
+                    var sr = new SeasonReport { Index = seasons.Count + 1, Occurences = 1, Season = season, Thumbprint = thumbprint };
+                    seasons.Add(thumbprint, sr);
+                }
+                else
+                {
+                    var sr = seasons[thumbprint];
+                    sr.Occurences++;
+                }
+            }
+
+            // Directory created based on the run ID
             if (!Directory.Exists(runId))
             {
                 Directory.CreateDirectory(runId);
             }
-            string fileName = Path.Combine(runId, "generation" + geneticAlgorithm.CurrentGeneration + "_" + geneticAlgorithm.CurrentPopulation.First().Fitness + ".txt");
-            using (var writer = File.CreateText(fileName)) 
+
+            // Verbose output
+            if (IsVerboseMode)
             {
-                writer.WriteLine("Report for generation {0}", geneticAlgorithm.CurrentGeneration);
-                writer.WriteLine("======================================");
-                writer.WriteLine();
-
-                // Gather a list of all Seasons
-                
-                foreach (var season in geneticAlgorithm.CurrentPopulation)
+                string fileName = Path.Combine(runId, "generation" + geneticAlgorithm.CurrentGeneration + "_verbose.txt");
+                using (var writer = File.CreateText(fileName))
                 {
-                    string thumbprint = Thumbprint(season);
+                    writer.WriteLine("Report for generation {0}", geneticAlgorithm.CurrentGeneration);
+                    writer.WriteLine("======================================");
+                    writer.WriteLine();
 
-                    if (!seasons.ContainsKey(thumbprint))
+                    // Now print them all out
+                    foreach (var sr in seasons.Values.OrderBy(x => x.Index))
                     {
-                        var sr = new SeasonReport { Index = seasons.Count + 1, Occurences = 1, Season = season, Thumbprint = thumbprint };
-                        seasons.Add(thumbprint, sr);
+                        PrintSessionWithStats(writer, sr, geneticAlgorithm.CurrentPopulation.Count);
                     }
-                    else
-                    {
-                        var sr = seasons[thumbprint];
-                        sr.Occurences++;
-                    }
-                }
-
-                // Now print them all out
-                foreach (var sr in seasons.Values.OrderBy(x => x.Index))
-                {
-                    PrintSessionWithStats(writer, sr, geneticAlgorithm.CurrentPopulation.Count);
                 }
             }
 
-            string advancedStatsPath = Path.Combine(runId, "generation" + geneticAlgorithm.CurrentGeneration + "_advanced.txt");
+            string advancedStatsPath = Path.Combine(runId, "generation" + geneticAlgorithm.CurrentGeneration + "_" + geneticAlgorithm.CurrentPopulation.First().Fitness + ".txt");
             using (var writer = File.CreateText(advancedStatsPath))
             {
                 writer.WriteLine("Top 10 seasons for generation {0}", geneticAlgorithm.CurrentGeneration);
