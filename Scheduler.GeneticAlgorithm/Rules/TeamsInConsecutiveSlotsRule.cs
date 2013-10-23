@@ -15,7 +15,7 @@ namespace Scheduler.GeneticAlgorithm.Rules
     /// </summary>
     public class TeamsInConsecutiveSlotsRule : IRule
     {
-        private const int Reward = 10;
+        private const int Reward = 5;
         private readonly Team team1;
         private readonly Team team2;
 
