@@ -38,6 +38,11 @@ namespace Scheduler.GeneticAlgorithm.Rules
                 
         public int Apply(Season season)
         {
+            return this.InnerApply(season, null);
+        }
+
+        private int InnerApply(Season season, List<RuleMessage> messages)
+        {
             int totalPenalty = 0;
 
             // Pre-seed the mapping structure now so that we can avoid "contains" checks all through the code.
@@ -54,13 +59,16 @@ namespace Scheduler.GeneticAlgorithm.Rules
             }
 
             // Calculate the penalty
-            foreach (var opponentDict in teamOpponents.Values)
+            foreach (var team in teamOpponents.Keys)
             {
-                foreach (var numGamesAgainstOpponent in opponentDict.Values)
+                var opponentDict = teamOpponents[team];
+                foreach (var opponent in opponentDict.Keys)
                 {
+                    var numGamesAgainstOpponent = opponentDict[opponent];
                     if (numGamesAgainstOpponent < this.minimumOptimalGamesPerOpponent || numGamesAgainstOpponent > this.maximumOptimalGamesPerOpponent)
                     {
                         totalPenalty += PenaltyPerInfraction;
+                        if (messages != null) messages.Add(new RuleMessage(PenaltyPerInfraction, string.Format("{0} plays {1} games against {2} during the season", team, numGamesAgainstOpponent, opponent)));
                     }
                 }
             }
@@ -83,6 +91,14 @@ namespace Scheduler.GeneticAlgorithm.Rules
             }
 
             return teamOpponents;
+        }
+
+
+        public List<RuleMessage> Report(Season season)
+        {
+            var messages = new List<RuleMessage>();
+            InnerApply(season, messages);
+            return messages;
         }
     }
 }

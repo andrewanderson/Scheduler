@@ -61,5 +61,17 @@ namespace Scheduler.GeneticAlgorithm.Rules
             return 0; // wtf
         }
 
+        public List<RuleMessage> Report(Season season)
+        {
+            var messages = new List<RuleMessage>();
+
+            int score = this.Apply(season);
+            if (score > 0)
+            {
+                messages.Add(new RuleMessage(score, string.Format("{0} and {1} play in adjacent game slots {2} weeks during the season", this.team1.Name, this.team2.Name, score / Reward)));
+            }
+
+            return messages;
+        }
     }
 }

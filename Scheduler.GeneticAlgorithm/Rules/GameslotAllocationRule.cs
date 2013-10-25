@@ -40,6 +40,11 @@ namespace Scheduler.GeneticAlgorithm.Rules
           
         public int Apply(Season season)
         {
+            return this.InnerApply(season, null);
+        }
+
+        private int InnerApply(Season season, List<RuleMessage> messages) 
+        {
             int cumulativeDistance = 0;
 
             // Pre-seed the mapping structure now so that we can avoid "contains" checks all through the code.
@@ -56,17 +61,26 @@ namespace Scheduler.GeneticAlgorithm.Rules
             }
 
             // Calculate the penalty
-            foreach (var teamDict in teamSlots.Values)
+            foreach (var team in teamSlots.Keys)
             {
-                foreach (var numGamesInSlot in teamDict.Values)
+                var teamDict = teamSlots[team];
+                foreach (var slotKey in teamDict.Keys)
                 {
+                    var numGamesInSlot = teamDict[slotKey];
+                    int penalty = 0;
                     if (numGamesInSlot < this.minimumOptimalGames)
                     {
-                        cumulativeDistance += this.minimumOptimalGames - numGamesInSlot;
+                        penalty = this.minimumOptimalGames - numGamesInSlot;
                     }
                     else if (numGamesInSlot > this.maximumOptimalGames)
                     {
-                        cumulativeDistance += numGamesInSlot - this.maximumOptimalGames;
+                        penalty = numGamesInSlot - this.maximumOptimalGames;
+                    }
+
+                    if (penalty != 0)
+                    {
+                        cumulativeDistance += penalty;
+                        if (messages != null) messages.Add(new RuleMessage(penalty * PenaltyMultiplier, string.Format("{0} has {1} games in slot {2}", team, numGamesInSlot, slotKey)));
                     }
                 }
             }
@@ -88,6 +102,14 @@ namespace Scheduler.GeneticAlgorithm.Rules
             }
 
             return teamSlots;
+        }
+
+
+        public List<RuleMessage> Report(Season season)
+        {
+            var messages = new List<RuleMessage>();
+            InnerApply(season, messages);
+            return messages;
         }
     }
 }

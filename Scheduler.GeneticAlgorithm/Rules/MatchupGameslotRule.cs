@@ -38,23 +38,36 @@ namespace Scheduler.GeneticAlgorithm.Rules
 
         public int Apply(Season season)
         {
+            return this.InnerApply(season, null);
+        }
+
+        private int InnerApply(Season season, List<RuleMessage> messages)
+        {
             int totalReward = 0;
 
-            foreach (var week in season.Weeks)
+            for (int i = 0; i < season.Weeks.Count; i++)
             {
+                var week = season.Weeks[i];
                 foreach (var game in week.Games)
                 {
                     if (this.desiredSlots.Where(s => s.Id == game.Slot.Id).Any()
                        && (game.Home.Name == this.team1.Name || game.Home.Name == this.team2.Name)
-                       && (game.Away.Name == this.team1.Name || game.Away.Name == this.team2.Name)) 
+                       && (game.Away.Name == this.team1.Name || game.Away.Name == this.team2.Name))
                     {
                         totalReward += Reward;
+                        if (messages != null) messages.Add(new RuleMessage(Reward, string.Format("{0} plays {1} on week {2} at {3}", this.team1.Name, this.team2.Name, i + 1, game.Slot.StartTime)));
                     }
                 }
             }
 
-
             return totalReward;
+        }
+
+        public List<RuleMessage> Report(Season season)
+        {
+            var messages = new List<RuleMessage>();
+            InnerApply(season, messages);
+            return messages;
         }
     }
 }

@@ -34,5 +34,10 @@ namespace Scheduler.Domain
             }
             return newSeason;
         }
+
+        public override string ToString()
+        {
+            return string.Format("Season with {0} fitness", this.Fitness);
+        }
     }
 }

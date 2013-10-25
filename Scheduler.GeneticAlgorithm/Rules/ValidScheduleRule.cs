@@ -14,7 +14,7 @@ namespace Scheduler.GeneticAlgorithm.Rules
     /// </summary>
     public class ValidScheduleRule : IRule
     {
-        private const int Reward = 2000;
+        private const int Reward = 5000;
 
         public void Initialize(League league)
         {
@@ -23,12 +23,7 @@ namespace Scheduler.GeneticAlgorithm.Rules
 
         public int Apply(Season season)
         {
-            foreach (var schedule in season.Weeks)
-            {
-                if (IsValid(schedule)) return Reward;
-            }
-
-            return 0;
+            return season.Weeks.All(s => this.IsValid(s)) ? Reward : 0;
         }
 
         private bool IsValid(Schedule schedule)
@@ -44,6 +39,18 @@ namespace Scheduler.GeneticAlgorithm.Rules
             }
 
             return true;
+        }
+        
+        public List<RuleMessage> Report(Season season)
+        {
+            var messages = new List<RuleMessage>();
+
+            if (this.Apply(season) > 0)
+            {
+                messages.Add(new RuleMessage(Reward, "Schedule is valid."));
+            }
+
+            return messages;
         }
     }
 }

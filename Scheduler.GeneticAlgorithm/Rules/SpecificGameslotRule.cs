@@ -35,10 +35,25 @@ namespace Scheduler.GeneticAlgorithm.Rules
             var desiredWeek = season.Weeks[this.targetWeekIndex];
             foreach (var game in desiredWeek.Games)
             {
-                if (game.Slot.Id == this.targetSlot.Id && (game.Home.Name == this.targetTeam.Name || game.Away.Name == this.targetTeam.Name))
+                if (game.Slot.Id == this.targetSlot.Id && (game.Home.Name == this.targetTeam.Name || game.Away.Name == this.targetTeam.Name)) 
+                {
                     return Reward;
+                }
+                
             }
             return 0;
+        }
+
+        public List<RuleMessage> Report(Season season)
+        {
+            var messages = new List<RuleMessage>();
+
+            if (this.Apply(season) > 0)
+            {
+                messages.Add(new RuleMessage(Reward, string.Format("{0} plays at {1} on week {2}", targetTeam.Name, targetSlot.StartTime, targetWeekIndex + 1)));
+            }
+
+            return messages;
         }
     }
 }

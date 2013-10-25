@@ -16,7 +16,7 @@ namespace Scheduler.Cmd
         private const int PopulationSize = 2500;
         private const int GenerationIncrement = 10000;
         private const bool AutoSave = true;
-        private const int AutoSaveIncrement = 100;
+        private const int AutoSaveIncrement = 50;
 
         private static PrimordialSoup GeneticAlgorithm = null;
         private static string RunId = null;
@@ -260,6 +260,22 @@ namespace Scheduler.Cmd
             {
                 int score = rule.Apply(sr.Season);
                 writer.WriteLine("{0}: {1}", rule.GetType().Name, score);
+            }
+            writer.WriteLine();
+            writer.WriteLine("Rule analysis");
+            writer.WriteLine("------------");
+            foreach (var rule in ga.Rules)
+            {
+                var messages = rule.Report(sr.Season);
+                writer.WriteLine("{0}", rule.GetType().Name);
+                if (messages.Count == 0)
+                {
+                    writer.WriteLine("       No penalties or bonuses");
+                }
+                foreach (var message in messages)
+                {
+                    writer.WriteLine("       {0} - {1}", message.Points, message.Message);
+                }
             }
             writer.WriteLine();
         }

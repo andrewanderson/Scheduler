@@ -25,5 +25,10 @@ namespace Scheduler.GeneticAlgorithm.Rules
         /// Calculate the component of the Season's fitness that applies to this rule.
         /// </summary>
         int Apply(Season season);
+
+        /// <summary>
+        /// Returns a list of messages related to a season's performance under this rule.
+        /// </summary>
+        List<RuleMessage> Report(Season season);
     }
 }

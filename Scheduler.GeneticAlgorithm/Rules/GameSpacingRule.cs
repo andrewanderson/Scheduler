@@ -36,14 +36,19 @@ namespace Scheduler.GeneticAlgorithm.Rules
             for (int i = 0; i < this.optimialMinimumSpaceBetweenOpponents; i++)
             {
                 // Not much penalty for one game off, a tonne for 5+ games off
-                this.penaltyMatrix.Add(i * -2 + Math.Max(0, (i - 1)) * -5 + Math.Max(0, (i - 4)) * -10);
+                this.penaltyMatrix.Add(i * -2 + Math.Max(0, (i - 1)) * -5 + Math.Max(0, (i - 2)) * -40);
             }
 
             // For an 8 team league, the penalty matrix will be:
-            // 0, 2, 9, 16, 23, 40, 57
+            // 0, 2, 9, 56, 103, 150, 197
         }
           
         public int Apply(Season season)
+        {
+            return this.InnerApply(season, null);
+        }
+
+        private int InnerApply(Season season, List<RuleMessage> messages) 
         {
             int totalPenalty = 0;
 
@@ -77,6 +82,7 @@ namespace Scheduler.GeneticAlgorithm.Rules
                         if (penaltyIndex >= 0 && penaltyIndex < this.penaltyMatrix.Count)
                         {
                             totalPenalty += this.penaltyMatrix[penaltyIndex];
+                            if (messages != null && this.penaltyMatrix[penaltyIndex] != 0) messages.Add(new RuleMessage(this.penaltyMatrix[penaltyIndex], string.Format("{0} plays {1} on week {2} and then week {3}", team, opponent, indecies[i] + 1, indecies[i + 1] + 1)));
                         }
                     }
                 }
@@ -95,6 +101,13 @@ namespace Scheduler.GeneticAlgorithm.Rules
                 if (list[i].Equals(value)) indecies.Add(i);
             }
             return indecies;
+        }
+
+        public List<RuleMessage> Report(Season season)
+        {
+            var messages = new List<RuleMessage>();
+            InnerApply(season, messages);
+            return messages;
         }
     }
 }
