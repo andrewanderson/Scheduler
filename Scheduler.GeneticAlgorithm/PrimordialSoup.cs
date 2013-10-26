@@ -33,7 +33,7 @@ namespace Scheduler.GeneticAlgorithm
         private const int AutomaticGenerationHoppers = 50;
 
         private const double CrossOverPercent = 0.7;
-        private const double MutationPercent = 0.0075;
+        private const double MutationPercent = 0.0025;
 
         private readonly List<ICrossoverAlgorithm> crossoverAlgorithms;
         private readonly List<IMutationAlgorithm> mutationAlgorithms;
@@ -178,10 +178,12 @@ namespace Scheduler.GeneticAlgorithm
                 // Mutation (separate chance for each child)
                 foreach (var child in children)
                 {
-                    if (RandomProvider.NextDouble() <= MutationPercent)
+                    foreach (var alg in this.mutationAlgorithms) // Could experience multiple types of mutation
                     {
-                        int mutationIndex = RandomProvider.Next(this.mutationAlgorithms.Count);
-                        this.mutationAlgorithms[mutationIndex].Mutate(child);
+                        if (RandomProvider.NextDouble() <= MutationPercent)
+                        {
+                            alg.Mutate(child);
+                        }
                     }
                 }
 

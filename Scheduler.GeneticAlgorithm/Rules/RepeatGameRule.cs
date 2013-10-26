@@ -11,12 +11,12 @@ namespace Scheduler.GeneticAlgorithm.Rules
     /// A rule that penalizes seasons where teams repeat games against opponents more often
     /// than if there was a perfectly even distribution.
     /// 
-    /// 20 points per team are deducted for teams playing more/less than an even
+    /// 50 points per team are deducted for teams playing more/less than an even
     /// number of games against a given opponent.
     /// </summary>
     public class RepeatGameRule : IRule
     {
-        private const int PenaltyPerInfraction = -10; // Will lose -10 for the each side of the match-up being out of the desired range, so -20 over all.
+        private const int PenaltyPerInfraction = -50; 
 
         private int minimumOptimalGamesPerOpponent = 0;
         private int maximumOptimalGamesPerOpponent = 0;
@@ -58,11 +58,12 @@ namespace Scheduler.GeneticAlgorithm.Rules
                 }
             }
 
+            var alreadyProcessed = new List<string>();
             // Calculate the penalty
             foreach (var team in teamOpponents.Keys)
             {
                 var opponentDict = teamOpponents[team];
-                foreach (var opponent in opponentDict.Keys)
+                foreach (var opponent in opponentDict.Keys.Where(o => !alreadyProcessed.Contains(o)))
                 {
                     var numGamesAgainstOpponent = opponentDict[opponent];
                     if (numGamesAgainstOpponent < this.minimumOptimalGamesPerOpponent || numGamesAgainstOpponent > this.maximumOptimalGamesPerOpponent)
@@ -71,6 +72,7 @@ namespace Scheduler.GeneticAlgorithm.Rules
                         if (messages != null) messages.Add(new RuleMessage(PenaltyPerInfraction, string.Format("{0} plays {1} games against {2} during the season", team, numGamesAgainstOpponent, opponent)));
                     }
                 }
+                alreadyProcessed.Add(team);
             }
 
             return totalPenalty;
