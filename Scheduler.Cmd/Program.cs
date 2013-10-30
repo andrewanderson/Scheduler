@@ -14,44 +14,24 @@ namespace Scheduler.Cmd
     public class Program
     {
         private const int PopulationSize = 2500;
-        private const int GenerationIncrement = 100000;
+        private const int DefaultGenerationIncrement = 5000;
         private const bool AutoSave = true;
         private const int AutoSaveIncrement = 50;
 
         private static PrimordialSoup GeneticAlgorithm = null;
         private static string RunId = null;
-        private static League BfpLeague = null;
         private static bool IsVerboseMode = false;
+
+        // CHANGE THESE LINES TO SELECT A DIFFERENT LEAGUE!
+        private static League league = BfpWinterLeague.BfpLeague;
+        private static List<IRule> customRules = BfpWinterLeague.CustomRules;
 
         public static void Main(string[] args)
         {
             if (args.Where(a => a.Equals("-v")).Any())
                 IsVerboseMode = true;
 
-            var field = new Field { Name = "Ben Franklin" };
-
-            BfpLeague = new League { Duration = 20 };
-            BfpLeague.Teams.Add(new Team { Name = "A" });
-            BfpLeague.Teams.Add(new Team { Name = "B" });
-            BfpLeague.Teams.Add(new Team { Name = "C" });
-            BfpLeague.Teams.Add(new Team { Name = "D" });
-            BfpLeague.Teams.Add(new Team { Name = "E" });
-            BfpLeague.Teams.Add(new Team { Name = "F" });
-            BfpLeague.Teams.Add(new Team { Name = "G" });
-            BfpLeague.Teams.Add(new Team { Name = "H" });
-
-            BfpLeague.GameSlots.Add(new GameSlot { Id = "6:00", Field = field, StartTime = "6:00" });
-            BfpLeague.GameSlots.Add(new GameSlot { Id = "7:15", Field = field, StartTime = "7:15" });
-            BfpLeague.GameSlots.Add(new GameSlot { Id = "8:30", Field = field, StartTime = "8:30" });
-            BfpLeague.GameSlots.Add(new GameSlot { Id = "9:45", Field = field, StartTime = "9:45" });
-
-            var customRules = new List<IRule> {
-                new SpecificGameslotRule(BfpLeague.Teams[0], BfpLeague.GameSlots[0], 4),
-                new TeamsInConsecutiveSlotsRule(BfpLeague.Teams[1], BfpLeague.Teams[2]),
-                new MatchupGameslotRule(BfpLeague.Teams[1], BfpLeague.Teams[2], new List<GameSlot> { BfpLeague.GameSlots[0], BfpLeague.GameSlots[1] }),
-            };
-
-            GeneticAlgorithm = new PrimordialSoup(BfpLeague, customRules, PopulationSize);
+            GeneticAlgorithm = new PrimordialSoup(league, customRules, PopulationSize);
             GeneticAlgorithm.Initialize();
 
             GeneticAlgorithm.GenerationComplete += geneticAlgorithm_GenerationComplete;
@@ -69,12 +49,12 @@ namespace Scheduler.Cmd
                     }
 
                     if (key != 'r')
-                        SaveState(GeneticAlgorithm, RunId, BfpLeague);
+                        SaveState(GeneticAlgorithm, RunId, league);
                 }
 
                 if (key == 'r')
                 {
-                    GeneticAlgorithm.Run(GenerationIncrement);
+                    GeneticAlgorithm.Run(DefaultGenerationIncrement);
 
                     var topSeason = GeneticAlgorithm.CurrentPopulation.First();
                     Console.Out.WriteLine();
@@ -85,7 +65,7 @@ namespace Scheduler.Cmd
                 }
 
                 Console.Out.WriteLine();
-                Console.Out.WriteLine("Pick: (r)un {0} generations, (s)ave to a file, (q)uit", GenerationIncrement);
+                Console.Out.WriteLine("Pick: (r)un {0} generations, (s)ave to a file, (q)uit", DefaultGenerationIncrement);
                 Console.Out.Write(">>> ");
 
                 key = Console.ReadKey().KeyChar;
@@ -100,7 +80,7 @@ namespace Scheduler.Cmd
 
             if (AutoSave && gea.Generation % AutoSaveIncrement == 0)
             {
-                SaveState(GeneticAlgorithm, RunId, BfpLeague);
+                SaveState(GeneticAlgorithm, RunId, league);
             }
         }
 
@@ -223,6 +203,8 @@ namespace Scheduler.Cmd
                 }
             }
 
+            writer.WriteLine("Thumbprint: {0}", Thumbprint(sr.Season));
+            writer.WriteLine();
             writer.WriteLine("Game slot allocation");
             writer.WriteLine("--------------------");
             foreach (var team in league.Teams)
@@ -295,7 +277,6 @@ namespace Scheduler.Cmd
                     teamKeys.Add(game.Away.Name, key.ToString());
                     key++;
                 }
-                
             }
 
             var sb = new StringBuilder();

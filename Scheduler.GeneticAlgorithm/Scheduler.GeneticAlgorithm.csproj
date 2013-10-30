@@ -59,6 +59,7 @@
     <Compile Include="Rules\RuleMessage.cs" />
     <Compile Include="Rules\SpecificGameslotRule.cs" />
     <Compile Include="Rules\TeamsInConsecutiveSlotsRule.cs" />
+    <Compile Include="Rules\TeamsNotInConsecutiveSlotsRule.cs" />
     <Compile Include="Rules\ValidScheduleRule.cs" />
     <Compile Include="SeasonFactory.cs" />
   </ItemGroup>
