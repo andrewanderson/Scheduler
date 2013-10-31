@@ -13,7 +13,7 @@ namespace Scheduler.Cmd
 {
     public class Program
     {
-        private const int PopulationSize = 2500;
+        private const int PopulationSize = 1500;
         private const int DefaultGenerationIncrement = 10000;
         private const bool AutoSave = true;
         private const int AutoSaveIncrement = 50;
@@ -103,6 +103,10 @@ namespace Scheduler.Cmd
                     sr.Occurences++;
                 }
             }
+            var sortedSRs = seasons.Values.OrderBy(x => x.Index).ToList();
+            
+            // Write out a summary of the diversity to the console
+            Console.Out.WriteLine("Current Diversity: {0} unique, {1} max, {2} min", sortedSRs.Count, sortedSRs.First().Season.Fitness, sortedSRs.Last().Season.Fitness);
 
             // Directory created based on the run ID
             if (!Directory.Exists(runId))
@@ -121,7 +125,7 @@ namespace Scheduler.Cmd
                     writer.WriteLine();
 
                     // Now print them all out
-                    foreach (var sr in seasons.Values.OrderBy(x => x.Index))
+                    foreach (var sr in sortedSRs)
                     {
                         PrintSessionWithStats(writer, sr, geneticAlgorithm.CurrentPopulation.Count);
                     }
