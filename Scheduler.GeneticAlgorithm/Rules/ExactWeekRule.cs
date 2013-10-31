@@ -37,8 +37,8 @@ namespace Scheduler.GeneticAlgorithm.Rules
                 // Match the week to the target, ignoring home/away
                 var targetGame = this.targetSchedule.Games.FirstOrDefault(g => g.Slot.Id == scheduledGame.Slot.Id);
                 if (targetGame == null) return 0;
-                if (targetGame.Home.Name != scheduledGame.Home.Name || targetGame.Home.Name != scheduledGame.Away.Name) return 0;
-                if (targetGame.Away.Name != scheduledGame.Home.Name || targetGame.Away.Name != scheduledGame.Away.Name) return 0;               
+                if (targetGame.Home.Name != scheduledGame.Home.Name && targetGame.Home.Name != scheduledGame.Away.Name) return 0;
+                if (targetGame.Away.Name != scheduledGame.Home.Name && targetGame.Away.Name != scheduledGame.Away.Name) return 0;               
             }
             return Reward;
         }

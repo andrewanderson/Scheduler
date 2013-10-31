@@ -19,5 +19,10 @@ namespace Scheduler.Domain
         {
             return new Matchup { Home = this.Home, Away = this.Away, Slot = this.Slot };
         }
+
+        public override string ToString()
+        {
+            return string.Format("{0} - {1} vs {2}", this.Slot, this.Home, this.Away);
+        }
     }
 }
