@@ -13,8 +13,8 @@ namespace Scheduler.Cmd
 {
     public class Program
     {
-        private const int PopulationSize = 1500;
-        private const int DefaultGenerationIncrement = 10000;
+        private const int PopulationSize = 1000;
+        private const int DefaultGenerationIncrement = 5000;
         private const bool AutoSave = true;
         private const int AutoSaveIncrement = 50;
 
@@ -55,13 +55,6 @@ namespace Scheduler.Cmd
                 if (key == 'r')
                 {
                     GeneticAlgorithm.Run(DefaultGenerationIncrement);
-
-                    var topSeason = GeneticAlgorithm.CurrentPopulation.First();
-                    Console.Out.WriteLine();
-                    Console.Out.WriteLine("Top Season");
-                    Console.Out.WriteLine("----------");
-                    Console.Out.WriteLine();
-                    PrintSeason(topSeason, Console.Out);
                 }
 
                 Console.Out.WriteLine();
