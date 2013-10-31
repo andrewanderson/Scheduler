@@ -83,6 +83,7 @@ namespace Scheduler.GeneticAlgorithm
                 new GameslotAllocationRule(),
                 new RepeatGameRule(),
                 new GameSpacingRule(),
+                new GameslotSpacingRule(),
             };
             this.rules.AddRange(userRules);
 

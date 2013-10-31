@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="FisherYatesShuffleAlgorithm.cs" />
     <Compile Include="GenerationEventArgs.cs" />
+    <Compile Include="ListExtensions.cs" />
     <Compile Include="Reproduction\GameShuffleMutation.cs" />
     <Compile Include="Reproduction\ICrossoverAlgorithm.cs" />
     <Compile Include="Reproduction\IMutationAlgorithm.cs" />
@@ -51,6 +52,7 @@
     <Compile Include="PrimordialSoup.cs" />
     <Compile Include="RandomProvider.cs" />
     <Compile Include="Rules\GameslotAllocationRule.cs" />
+    <Compile Include="Rules\GameslotSpacingRule.cs" />
     <Compile Include="Rules\GameSpacingRule.cs" />
     <Compile Include="Rules\IRule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

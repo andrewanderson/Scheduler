@@ -75,7 +75,7 @@ namespace Scheduler.GeneticAlgorithm.Rules
                     // Don't double-process match-ups
                     if (alreadyProcessed.Contains(opponent)) continue;
 
-                    var indecies = this.FindIndecies(opponentSchedule, opponent);
+                    var indecies = opponentSchedule.FindIndecies(opponent);
                     for (int i = 0; i < indecies.Count - 1; i++) 
                     {
                         int penaltyIndex = this.optimialMinimumSpaceBetweenOpponents - (indecies[i + 1] - indecies[i]);
@@ -91,16 +91,6 @@ namespace Scheduler.GeneticAlgorithm.Rules
             }
             
             return totalPenalty;
-        }
-
-        private List<int> FindIndecies<T>(List<T> list, T value)
-        {
-            var indecies = new List<int>();
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (list[i].Equals(value)) indecies.Add(i);
-            }
-            return indecies;
         }
 
         public List<RuleMessage> Report(Season season)
