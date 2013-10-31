@@ -13,7 +13,7 @@ namespace Scheduler.GeneticAlgorithm.Rules
     /// </summary>
     public class MatchupGameslotRule : IRule
     {
-        private const int Reward = 10;
+        private const int Reward = 20;
 
         private readonly Team team1;
         private readonly Team team2;

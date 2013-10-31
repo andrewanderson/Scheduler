@@ -51,6 +51,7 @@
     <Compile Include="RuleBasedFitnessCalculator.cs" />
     <Compile Include="PrimordialSoup.cs" />
     <Compile Include="RandomProvider.cs" />
+    <Compile Include="Rules\ExactWeekRule.cs" />
     <Compile Include="Rules\GameslotAllocationRule.cs" />
     <Compile Include="Rules\GameslotSpacingRule.cs" />
     <Compile Include="Rules\GameSpacingRule.cs" />

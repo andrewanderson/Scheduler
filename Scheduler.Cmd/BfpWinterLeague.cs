@@ -31,10 +31,15 @@ namespace Scheduler.Cmd
             BfpLeague.GameSlots.Add(new GameSlot { Id = "8:30", Field = field, StartTime = "8:30" });
             BfpLeague.GameSlots.Add(new GameSlot { Id = "9:45", Field = field, StartTime = "9:45" });
 
+            var week1 = new Schedule();
+            week1.Games.Add(new Matchup { Home = BfpLeague.Teams[5], Away = BfpLeague.Teams[3], Slot = BfpLeague.GameSlots[0] }); // Bridget vs Bill @ 6:00
+            week1.Games.Add(new Matchup { Home = BfpLeague.Teams[4], Away = BfpLeague.Teams[7], Slot = BfpLeague.GameSlots[1] }); // Colin vs Andrew @ 7:15
+            week1.Games.Add(new Matchup { Home = BfpLeague.Teams[6], Away = BfpLeague.Teams[0], Slot = BfpLeague.GameSlots[2] }); // Josh vs Matt @ 8:30
+            week1.Games.Add(new Matchup { Home = BfpLeague.Teams[1], Away = BfpLeague.Teams[2], Slot = BfpLeague.GameSlots[3] }); // Chris vs George @ 9:45
+            
             CustomRules.AddRange(new List<IRule>
                 {
-                    new SpecificGameslotRule(BfpLeague.Teams[4], BfpLeague.GameSlots[1], 0), /* Week 1 - Michelle @ 7:15 */
-                    new SpecificGameslotRule(BfpLeague.Teams[7], BfpLeague.GameSlots[2], 0), /* Week 1 - Andrew @ 8:30 */
+                    new ExactWeekRule(week1, 0),
                     new TeamsNotInConsecutiveSlotsRule(BfpLeague.Teams[2], BfpLeague.Teams[7]),  /* Sophie and Erik not back-to-back */
                     new MatchupGameslotRule(BfpLeague.Teams[2], BfpLeague.Teams[7], new List<GameSlot> { BfpLeague.GameSlots[1], BfpLeague.GameSlots[2] }), /* Sophie and Erik in middle slots */
                 });
