@@ -14,7 +14,7 @@ namespace Scheduler.Cmd
     public class Program
     {
         private const int PopulationSize = 2500;
-        private const int DefaultGenerationIncrement = 5000;
+        private const int DefaultGenerationIncrement = 10000;
         private const bool AutoSave = true;
         private const int AutoSaveIncrement = 50;
 
