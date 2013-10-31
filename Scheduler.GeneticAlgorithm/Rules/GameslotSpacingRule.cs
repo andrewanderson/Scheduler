@@ -28,11 +28,12 @@ namespace Scheduler.GeneticAlgorithm.Rules
             // Penalize close repetitions harsher than those that are nearly optimal
             for (int i = 0; i < this.optimialMinimumSpaceBetweenSlots; i++)
             {
-                this.penaltyMatrix.Add(i * -1);
+                int p = Math.Max(0, i - 1);
+                this.penaltyMatrix.Add(p*p*2*-1);
             }
 
             // For an 4 slot league, the penalty matrix will be:
-            // 0, 1, 2, 3
+            // 0, 0, 2, 8
         }
 
         public int Apply(Season season)
