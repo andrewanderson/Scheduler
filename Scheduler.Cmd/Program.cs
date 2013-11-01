@@ -23,8 +23,11 @@ namespace Scheduler.Cmd
         private static bool IsVerboseMode = false;
 
         // CHANGE THESE LINES TO SELECT A DIFFERENT LEAGUE!
-        private static League league = BfpWinterLeague.BfpLeague;
-        private static List<IRule> customRules = BfpWinterLeague.CustomRules;
+        //private static League league = BfpWinterLeague.BfpLeague;
+        //private static List<IRule> customRules = BfpWinterLeague.CustomRules;
+
+        private static League league = JulieLeague.TheLeague;
+        private static List<IRule> customRules = JulieLeague.CustomRules;
 
         public static void Main(string[] args)
         {
@@ -147,7 +150,7 @@ namespace Scheduler.Cmd
                 var week = season.Weeks[i];
                 foreach (var game in week.Games.OrderBy(g => g.Slot.Id))
                 {
-                    destination.WriteLine("{0} - {1} vs {2}", game.Slot.StartTime, game.Home.Name, game.Away.Name);
+                    destination.WriteLine("{0}@{1} - {2} vs {3}", game.Slot.StartTime, game.Slot.Field.Name, game.Home.Name, game.Away.Name);
                 }
                 destination.WriteLine(string.Empty);
             }
@@ -168,17 +171,17 @@ namespace Scheduler.Cmd
         {
             PrintSessionWithStats(writer, sr, ga.CurrentPopulation.Count);
 
-            var slotAllocation = new Dictionary<string, Dictionary<string, int>>();
+            var fieldTimeAllocation = new Dictionary<string, Dictionary<string, int>>();
             var opponentProgression = new Dictionary<string, StringBuilder>();
             var opponentDistribution = new Dictionary<string, Dictionary<string, int>>();
             foreach (var team in league.Teams)
             {
-                slotAllocation.Add(team.Name, new Dictionary<string, int>());
+                fieldTimeAllocation.Add(team.Name, new Dictionary<string, int>());
                 opponentProgression.Add(team.Name, new StringBuilder());
                 opponentDistribution.Add(team.Name, new Dictionary<string, int>());
-                foreach (var slot in league.GameSlots)
+                foreach (var fieldTime in league.GameSlots.Select(s => s.StartTime).Distinct())
                 {
-                    slotAllocation[team.Name].Add(slot.Id, 0);
+                    fieldTimeAllocation[team.Name].Add(fieldTime, 0);
                 }
                 foreach (var opponent in league.Teams.Where(t => t.Name != team.Name))
                 {
@@ -189,8 +192,8 @@ namespace Scheduler.Cmd
             {
                 foreach (var game in week.Games)
                 {
-                    slotAllocation[game.Home.Name][game.Slot.Id]++;
-                    slotAllocation[game.Away.Name][game.Slot.Id]++;
+                    fieldTimeAllocation[game.Home.Name][game.Slot.StartTime]++;
+                    fieldTimeAllocation[game.Away.Name][game.Slot.StartTime]++;
 
                     opponentProgression[game.Home.Name].Append(game.Away.Name + "->");
                     opponentProgression[game.Away.Name].Append(game.Home.Name + "->");
@@ -202,14 +205,14 @@ namespace Scheduler.Cmd
 
             writer.WriteLine("Thumbprint: {0}", Thumbprint(sr.Season));
             writer.WriteLine();
-            writer.WriteLine("Game slot allocation");
+            writer.WriteLine("Start Time allocation");
             writer.WriteLine("--------------------");
             foreach (var team in league.Teams)
             {
                 writer.Write("{0}: ", team.Name);
-                foreach (var slot in league.GameSlots)
+                foreach (var fieldTime in league.GameSlots.Select(s => s.StartTime).Distinct())
                 {
-                    writer.Write("{0} - {1}, ", slot.StartTime, slotAllocation[team.Name][slot.Id]);    
+                    writer.Write("{0} - {1}, ", fieldTime, fieldTimeAllocation[team.Name][fieldTime]);    
                 }
                 writer.WriteLine();
             }
