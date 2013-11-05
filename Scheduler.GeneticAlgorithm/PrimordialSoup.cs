@@ -21,6 +21,7 @@ namespace Scheduler.GeneticAlgorithm
         private readonly SeasonFactory seasonFactory;
         private readonly int populationSize;
         private readonly SeasonComparerReversed seasonComparer = new SeasonComparerReversed();
+        private readonly MatchupComparer matchupComparer = new MatchupComparer();
 
         private int totalFitness = 0;
         private Season mostFitSeason = null;
@@ -212,6 +213,11 @@ namespace Scheduler.GeneticAlgorithm
         /// </summary>
         private void Register(Season season)
         {
+            // Fix up all of the weeks in the season so that the game slots are sorted by time.
+            // (random mutation might have muddled them all up)
+            season.Weeks.ForEach(w => w.Games.Sort(this.matchupComparer));
+
+            // Figure out the fitness of this season, and apply it to the running total
             season.Fitness = this.fitnessCalculator.Calculate(season);
             this.totalFitness += season.Fitness;
             if (season.Fitness > this.mostFitSeason.Fitness) this.mostFitSeason = season;
@@ -270,7 +276,30 @@ namespace Scheduler.GeneticAlgorithm
                         return -1;
                     else // Both are non-null, so compare the fitness values
                         return x.Fitness.CompareTo(y.Fitness) * -1;
-                        
+                }
+            }
+        }
+
+        /// <summary>
+        /// Compare Matchup based on game slot time.
+        /// </summary>
+        private class MatchupComparer : IComparer<Matchup>
+        {
+            public int Compare(Matchup x, Matchup y)
+            {
+                if (x == null)
+                {
+                    if (y == null) // If x is null and y is null, they're equal.  
+                        return 0;
+                    else // If x is null and y is not null, y is greater.                       
+                        return 1;
+                }
+                else
+                {
+                    if (y == null) // If x is not null and y is null, x is greater.
+                        return -1;
+                    else // Both are non-null, so compare the time values
+                        return x.Slot.StartTime.CompareTo(y.Slot.StartTime);
                 }
             }
         }

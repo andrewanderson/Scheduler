@@ -14,7 +14,7 @@ namespace Scheduler.Cmd
     public class Program
     {
         private const int PopulationSize = 1000;
-        private const int DefaultGenerationIncrement = 5000;
+        private const int DefaultGenerationIncrement = 15000;
         private const bool AutoSave = true;
         private const int AutoSaveIncrement = 50;
 
@@ -23,11 +23,11 @@ namespace Scheduler.Cmd
         private static bool IsVerboseMode = false;
 
         // CHANGE THESE LINES TO SELECT A DIFFERENT LEAGUE!
-        //private static League league = BfpWinterLeague.BfpLeague;
-        //private static List<IRule> customRules = BfpWinterLeague.CustomRules;
+        private static League league = BfpWinterLeague.BfpLeague;
+        private static List<IRule> customRules = BfpWinterLeague.CustomRules;
 
-        private static League league = JulieLeague.TheLeague;
-        private static List<IRule> customRules = JulieLeague.CustomRules;
+        //private static League league = JulieLeague.TheLeague;
+        //private static List<IRule> customRules = JulieLeague.CustomRules;
 
         public static void Main(string[] args)
         {
